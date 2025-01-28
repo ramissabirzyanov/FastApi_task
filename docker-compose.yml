@@ -1,0 +1,51 @@
+services:
+
+    postgres:
+      image: postgres
+      container_name: wallet_app_db
+      restart: on-failure
+      env_file:
+        - .env
+      environment:
+        POSTGRES_USER: $DB_USER
+        POSTGRES_PASSWORD: $DB_PASS
+        POSTGRES_DB: $DB_NAME
+        POSTGRES_PORT: $DB_PORT
+      volumes:
+       - ./postgres:/data/postgres
+  
+    app:
+      image: wallet_app
+      container_name: wallet_app
+      build:
+        context: .
+        dockerfile: Dockerfile
+      restart: always
+      environment:
+        DATABASE_URL: postgresql//$DB_USER:$DB_PASS@postgres:$DB_PORT/$DB_NAME
+      ports:
+        - "8000:8000"
+      volumes:
+        - .:/app
+      depends_on:
+        - postgres
+        - dev
+        - migrations
+    migrations:
+      build: .
+      container_name: migrations
+      command: alembic upgrade head
+      depends_on:
+        - postgres
+      environment:
+        DATABASE_URL: postgresql//$DB_USER:$DB_PASS@postgres:$DB_PORT/$DB_NAME
+    dev:
+      image: tests
+      container_name: tests
+      build:
+        context: .
+        dockerfile: Dockerfile
+      command: pytest
+      depends_on:
+        - postgres
+  
