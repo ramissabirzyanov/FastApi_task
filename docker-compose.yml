@@ -32,8 +32,9 @@ services:
         - dev
         - migrations
     migrations:
-      build: .
+      image: migrations
       container_name: migrations
+      build: .
       command: alembic upgrade head
       depends_on:
         - postgres
