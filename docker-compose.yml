@@ -21,10 +21,13 @@ services:
         context: .
         dockerfile: Dockerfile
       restart: always
+      env_file:
+        - .env
       environment:
         DATABASE_URL: postgresql://$DB_USER:$DB_PASS@postgres:$DB_PORT/$DB_NAME
       ports:
         - "8000:8000"
+      command: bash -c "uvicorn app.main:app --host 0.0.0.0 --port 8000"
       volumes:
         - .:/app
       depends_on:
