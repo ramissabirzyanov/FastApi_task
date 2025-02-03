@@ -19,7 +19,7 @@ DB_NAME = os.getenv('DB_TEST_NAME')
 @pytest.fixture
 def test_db_session():
     DATABASE_URL = "postgresql://{}:{}@{}:{}/{}".format(
-    DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME
+        DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME
     )
     engine = create_engine(DATABASE_URL)
     Base.metadata.create_all(bind=engine)
@@ -28,6 +28,7 @@ def test_db_session():
     yield test_session
     test_session.close()
     Base.metadata.drop_all(engine)
+
 
 @pytest.fixture
 def test_client(test_db_session):
