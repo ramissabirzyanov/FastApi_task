@@ -16,26 +16,18 @@ DB_PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_TEST_NAME')
 
 
-TEST_DATABASE_URL = "postgresql://{}:{}@{}:{}/{}".format(
-    DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME
-)
-ENGINE = create_engine(TEST_DATABASE_URL)
-SessionLocalTest = sessionmaker(bind=ENGINE, expire_on_commit=False, autoflush=False)
-
-Base.metadata.create_all(bind=ENGINE)
-
-
-@pytest.fixture()
+@pytest.fixture
 def test_db_session():
-    """Create a new database session with a rollback at the end of the test."""
-    connection = ENGINE.connect()
-    transaction = connection.begin()
-    test_session = SessionLocalTest(bind=connection)
+    DATABASE_URL = "postgresql://{}:{}@{}:{}/{}".format(
+    DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME
+    )
+    engine = create_engine(DATABASE_URL)
+    Base.metadata.create_all(bind=engine)
+    LocalSessionTest = sessionmaker(bind=engine, expire_on_commit=False, autoflush=False)
+    test_session = LocalSessionTest()
     yield test_session
     test_session.close()
-    transaction.rollback()
-    connection.close()
-
+    Base.metadata.drop_all(engine)
 
 @pytest.fixture
 def test_client(test_db_session):
