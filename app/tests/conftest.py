@@ -15,13 +15,13 @@ DB_HOST = os.getenv('DB_HOST')
 DB_PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_TEST_NAME')
 
+TEST_DATABASE_URL = "postgresql://{}:{}@{}:{}/{}".format(
+        DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME
+    )
 
 @pytest.fixture
 def test_db_session():
-    DATABASE_URL = "postgresql://{}:{}@{}:{}/{}".format(
-        DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME
-    )
-    engine = create_engine(DATABASE_URL)
+    engine = create_engine(TEST_DATABASE_URL)
     Base.metadata.create_all(bind=engine)
     LocalSessionTest = sessionmaker(bind=engine, expire_on_commit=False, autoflush=False)
     test_session = LocalSessionTest()
