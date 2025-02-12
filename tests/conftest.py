@@ -3,7 +3,7 @@ import os
 from decimal import Decimal
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.models import Base
+from app.wallet.models import Base
 from app.main import app
 from app.database import get_session
 from fastapi.testclient import TestClient
